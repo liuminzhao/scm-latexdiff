@@ -1,0 +1,9 @@
+A command line tool to create diff pdf's from git and mercurial repos.
+The script will automatically detect if the repo is git or hg.
+  
+Usage:
+  scm-latexdiff OLD:FILE [NEW:FILE]
+  
+The default NEW is HEAD
+
+Paul Hiemstra, 2012
