@@ -28,7 +28,10 @@ if __name__ == "__main__":
 
   # Running latex diff
   diff_tex = open("diff.tex", "w")
-  latexdiff(old_fo.name, new_fo.name, diff_tex)
+  if "local" in old_fileloc and not "local" in new_fileloc:
+    latexdiff(new_fo.name, old_fo.name, diff_tex)
+  else:
+    latexdiff(old_fo.name, new_fo.name, diff_tex)
   diff_tex.close()
 
   # Generating the pdf file
