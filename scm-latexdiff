@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-import sys, tempfile, pdb
+import sys, tempfile, pdb, shutil, glob
 from liblatexdiff import *
 
 if __name__ == "__main__":
@@ -37,7 +37,6 @@ if __name__ == "__main__":
   f.close()
   
   # Clean up
-  os.system('mv diff.pdf /tmp')
-  os.system('rm diff*')
-  os.system('mv /tmp/diff.pdf .')
-  
+  for filename in glob.glob('diff*') :
+	if not "pdf" in filename:
+	  os.remove(filename)   
