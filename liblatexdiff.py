@@ -1,5 +1,13 @@
 import os, os.path, subprocess
 
+def showHelp(argv):
+  try:
+    old_fileloc = argv[1]
+  except IndexError:
+    printHelp()    
+  if old_fileloc in ["-h","h","--help","help","--h"]:
+    printHelp()    
+
 def runCommand(cmd, stdout = None):
     ''' Runs the command and returns an appropriate string '''
     try:
