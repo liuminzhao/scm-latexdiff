@@ -1,0 +1,81 @@
+#! /usr/bin/python
+
+import sys, tempfile, subprocess, pdb, shutil, os, os.path
+from liblatexdiff import *
+
+def dumpGitFile(git_fileloc, output_fileobj = None):
+  ''' Dumping the file in 'git_fileloc' to a file open at 'output_fileobj' '''
+  print "Dumping %s: %s" % (git_fileloc, runCommand(("git","show", git_fileloc), stdout = output_fileobj))
+
+def dumpHgFile(hg_fileloc, output_fileobj = None):
+  print "Dumping %s: %s" % (hg_fileloc, runCommand(("hg","cat", hg_fileloc), stdout = output_fileobj))
+
+def printHelp():
+  print """A command line tool to create diff pdf's from git and mercurial repos.
+The script will automatically detect if the repo is git or hg.
+  
+Usage:
+  scm-latexdiff OLD:FILE [NEW:FILE]
+  
+The default NEW is HEAD
+
+Paul Hiemstra, 2012
+"""
+  exit()
+  
+def processCmdlineArgs(argv):
+  try:
+    old_fileloc = argv[1]
+  except IndexError:
+    printHelp()    
+  if old_fileloc in ["-h","h","--help","help","--h"]:
+    printHelp()    
+  try:
+    new_fileloc = argv[2]
+  except IndexError:
+    new_fileloc = "HEAD:" + old_fileloc.split(":")[1]  
+  return old_fileloc, new_fileloc
+
+def gitOrHg():
+  if os.path.exists(".hg"):
+    git = False
+  elif os.path.exists(".git"):
+    git = True
+  else:
+    print "Error, no git or Mercurial repository present."
+    exit()    
+  return git
+
+if __name__ == "__main__":
+  git = gitOrHg()
+  print(git)
+  exit()
+  
+  # Parsing input parameters
+  old_fileloc, new_fileloc = processCmdlineArgs(sys.argv)
+    
+  # Dumping revisions to temporary files
+  old_fo = open(tempfile.mkstemp()[1], "w")
+  new_fo = open(tempfile.mkstemp()[1], "w")
+  dumpGitFile(old_fileloc, old_fo)
+  dumpGitFile(new_fileloc, new_fo)  
+  old_fo.close()
+  new_fo.close()
+
+  # Running latex diff
+  diff_tex = open("diff.tex", "w")
+  latexdiff(old_fo.name, new_fo.name, diff_tex)
+  diff_tex.close()
+
+  # Running pdflatex
+  f = open("diff.logpaul", "w")
+  pdflatex("diff.tex", f)
+  pdflatex("diff.tex", f)
+  pdflatex("diff.tex", f)
+  f.close()
+  
+  # Clean up
+  os.system('mv diff.pdf /tmp')
+  os.system('rm diff*')
+  os.system('mv /tmp/diff.pdf .')
+  
