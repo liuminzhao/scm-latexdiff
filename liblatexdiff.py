@@ -1,4 +1,4 @@
-import os, os.path, subprocess
+import os, os.path, subprocess, tempfile, glob
 
 def showHelp(argv):
   ''' Determine whether or not to shows the usage to the user '''
@@ -66,8 +66,10 @@ Paul Hiemstra, paul AT numbertheory.nl"""
 def gitOrHg():
   ''' Determine whether we are in a git or mercurial repository'''
   if os.path.exists(".hg"):
+    print "Detected Mercurial repository..."
     git = False
   elif os.path.exists(".git"):
+    print "Detected Git repository..."
     git = True
   else:
     print "Error, no Git or Mercurial repository present."
@@ -104,10 +106,15 @@ def bibtex(aux_file, log_file = None):
 
 def compileDiffPdf(log_file = None):
   ''' Compile diff.pdf based on diff.tex '''
+  if not log_file is None:
+    log_file = open(log_file, "w")
   pdflatex("diff.tex", log_file)
   bibtex("diff.aux", log_file)
   pdflatex("diff.tex", log_file)
   pdflatex("diff.tex", log_file)
+  if not log_file is None:
+    log_file.close()
+
 
 def processCmdlineArgs(argv, git):
   ''' Process the command line arguments given by the user '''
@@ -120,3 +127,32 @@ def processCmdlineArgs(argv, git):
     else:
       new_fileloc = "tip:" + old_fileloc.split(":")[1]  
   return old_fileloc, new_fileloc
+
+def dumpFiles2tmp(old_fileloc, new_fileloc, git):
+  ''' Create the requested two files, and put them in a temp file. '''
+  old_fo = open(tempfile.mkstemp()[1], "w")
+  new_fo = open(tempfile.mkstemp()[1], "w")
+  if git:
+    dumpGitFile(old_fileloc, old_fo)
+    dumpGitFile(new_fileloc, new_fo)  
+  else:
+    dumpHgFile(old_fileloc, old_fo)
+    dumpHgFile(new_fileloc, new_fo)
+  old_fo.close()
+  new_fo.close()
+  return old_fo, new_fo
+  
+def createDiffTex(oldfile, newfile, diff_output = "diff.tex", swaplocal = False):
+  ''' Produce diff.tex based on the two files in "oldfile" and "newfile" '''
+  diff_tex = open(diff_output, "w")
+  if swaplocal:
+    latexdiff(newfile, oldfile, diff_tex)
+  else:
+    latexdiff(oldfile, newfile, diff_tex)
+  diff_tex.close()
+  
+def cleanAllNonePDF():
+  ''' Delete all diff files that are not a .pdf file '''
+  for filename in glob.glob('diff*') :
+    if not "pdf" in filename:
+      os.remove(filename)   

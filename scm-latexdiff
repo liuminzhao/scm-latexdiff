@@ -1,45 +1,17 @@
 #! /usr/bin/python
 
-import sys, tempfile, pdb, shutil, glob
+import sys
 from liblatexdiff import *
 
-if __name__ == "__main__":
-  showHelp(sys.argv)
+def scm_latexdiff(argv):
+  ''' Calculate diff pdf between two latex files, either in hg, git, or a local file. '''
+  showHelp(argv)
   git = gitOrHg()
-  if git:
-    print "Detected Git repository..."
-  else:
-    print "Detected Mercurial repository..."
-
-  # Parsing input parameters
-  old_fileloc, new_fileloc = processCmdlineArgs(sys.argv, git)
+  old_fileloc, new_fileloc = processCmdlineArgs(argv, git)
+  old_fo, new_fo = dumpFiles2tmp(old_fileloc, new_fileloc, git)
+  createDiffTex(old_fo.name, new_fo.name, swaplocal = "local" in old_fileloc and not "local" in new_fileloc)
+  compileDiffPdf("diff.log")
+  cleanAllNonePDF()
   
-  # Dumping revisions to temporary files
-  old_fo = open(tempfile.mkstemp()[1], "w")
-  new_fo = open(tempfile.mkstemp()[1], "w")
-  if git:
-    dumpGitFile(old_fileloc, old_fo)
-    dumpGitFile(new_fileloc, new_fo)  
-  else:
-    dumpHgFile(old_fileloc, old_fo)
-    dumpHgFile(new_fileloc, new_fo)
-  old_fo.close()
-  new_fo.close()
-
-  # Running latex diff
-  diff_tex = open("diff.tex", "w")
-  if "local" in old_fileloc and not "local" in new_fileloc:
-    latexdiff(new_fo.name, old_fo.name, diff_tex)
-  else:
-    latexdiff(old_fo.name, new_fo.name, diff_tex)
-  diff_tex.close()
-
-  # Generating the pdf file
-  f = open("diff.log", "w")
-  compileDiffPdf(f)
-  f.close()
-  
-  # Clean up
-  for filename in glob.glob('diff*') :
-	if not "pdf" in filename:
-	  os.remove(filename)   
+if __name__ == "__main__":
+  scm_latexdiff(sys.argv)
