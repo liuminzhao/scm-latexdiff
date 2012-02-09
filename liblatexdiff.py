@@ -40,8 +40,8 @@ Usage:
   scm-latexdiff OLD:FILE [NEW:FILE]
   
 where:
-  OLD:    old revision id
-  NEW:    new revision id
+  OLD:    old revision id, local for non-commited
+  NEW:    new revision id, local for non-commited
   FILE:   filename of the file you want to diff
   
 examples:
@@ -51,6 +51,9 @@ examples:
  # for git
  scm-latexdiff 87213:spam.tex
  scm-latexdiff 87213:spam.tex 97123:spam.tex
+ # You can also diff against non-commited (local) files
+ scm-latexdiff local:spam.tex
+ scm-latexdiff 2:spam.tex local:spam.tex
 
 Notes:
 The NEW:FILE argument is optional, default NEW is 'HEAD' when using git, 
