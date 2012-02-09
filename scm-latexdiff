@@ -3,7 +3,17 @@
 import sys, tempfile, pdb
 from liblatexdiff import *
 
+def showHelp(argv):
+  try:
+    old_fileloc = argv[1]
+  except IndexError:
+    printHelp()    
+  if old_fileloc in ["-h","h","--help","help","--h"]:
+    printHelp()    
+
+
 if __name__ == "__main__":
+  showHelp(sys.argv)
   git = gitOrHg()
   if git:
     print "Detected Git repository..."

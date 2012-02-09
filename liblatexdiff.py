@@ -23,15 +23,31 @@ def pdflatex(tex_file, log_file = None):
 
 def printHelp():
   print """A command line tool to create diff pdf's from git and mercurial repos.
-The script will automatically detect if the repo is git or hg.
+The script will automatically detect if the repo is git or hg. The 
+result is a pdf with the differences between the revisions, diff.pdf.
   
 Usage:
   scm-latexdiff OLD:FILE [NEW:FILE]
   
-The default NEW is HEAD
+where:
+  OLD:    old revision id
+  NEW:    new revision id
+  FILE:   filename of the file you want to diff
+  
+examples:
+ # for hg
+ scm-latexdiff 4:spam.tex
+ scm-latexdiff 4:spam.tex 6:spam.tex
+ # for git
+ scm-latexdiff 87213:spam.tex
+ scm-latexdiff 87213:spam.tex 97123:spam.tex
 
-Paul Hiemstra, 2012
-"""
+Notes:
+The NEW:FILE argument is optional, default NEW is 'HEAD' when using git, 
+and 'tip' when using hg. When referring to a git revision, not the whole
+sha1 key is needed, you can just provide the first few numbers.
+
+Paul Hiemstra, paul AT numbertheory.nl"""
   exit()
   
 def gitOrHg():
@@ -64,12 +80,7 @@ def compileDiffPdf(log_file = None):
   pdflatex("diff.tex", log_file)
 
 def processCmdlineArgs(argv, git):
-  try:
-    old_fileloc = argv[1]
-  except IndexError:
-    printHelp()    
-  if old_fileloc in ["-h","h","--help","help","--h"]:
-    printHelp()    
+  old_fileloc = argv[1]
   try:
     new_fileloc = argv[2]
   except IndexError:
