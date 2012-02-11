@@ -84,7 +84,7 @@ def dumpGitFile(git_fileloc, output_fileobj = None):
   ''' Dumping the file in 'git_fileloc' to a file open at 'output_fileobj' '''
   gitfile_split = git_fileloc.split(":")
   rev = gitfile_split[0]
-  gitfile = hgfile_split[1]
+  gitfile = gitfile_split[1]
   if rev == "local":
     dumpLocalFile(gitfile, output_fileobj)
   else:
