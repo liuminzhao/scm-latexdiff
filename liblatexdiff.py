@@ -127,21 +127,37 @@ def processCmdlineArgs(argv, git):
     else:
       new_fileloc = "tip:" + old_fileloc.split(":")[1]  
   return old_fileloc, new_fileloc
-
-def dumpFiles2tmp(old_fileloc, new_fileloc, git):
-  ''' Create the requested two files, and put them in a temp file. '''
-  old_fo = open(tempfile.mkstemp()[1], "w")
-  new_fo = open(tempfile.mkstemp()[1], "w")
-  if git:
-    dumpGitFile(old_fileloc, old_fo)
-    dumpGitFile(new_fileloc, new_fo)  
-  else:
-    dumpHgFile(old_fileloc, old_fo)
-    dumpHgFile(new_fileloc, new_fo)
-  old_fo.close()
-  new_fo.close()
-  return old_fo, new_fo
   
+def dumpRepositoryVersion2tmp(old_fileloc, new_fileloc, git):
+  old_dir = tempfile.mkdtemp()
+  new_dir = tempfile.mkdtemp()
+  old_texfile = cloneRepository(old_fileloc, old_dir, git)
+  new_texfile = cloneRepository(new_fileloc, new_dir, git)
+  return old_texfile, new_texfile
+ 
+
+def cloneRepository(fileloc, dest_dir, git):
+  if git:
+    texfile = cloneGitRepository(fileloc, dest_dir)
+  else:
+    texfile = cloneHgRepository(fileloc, dest_dir)
+  return texfile
+
+def cloneGitRepository(fileloc, dest_dir):
+  pass
+
+def cloneHgRepository(hg_fileloc, dest_dir):
+  hgfile_split = hg_fileloc.split(":")
+  rev = hgfile_split[0]
+  hgfile = hgfile_split[1]
+  src_dir = os.path.dirname(hgfile)
+  if src_dir == "":
+    src_dir = "."
+  devnull = open(os.devnull, "w")
+  print "Cloning revision %s: %s" % (rev, runCommand(("hg","clone", "-r%s" % rev, src_dir, dest_dir), stdout = devnull))
+  devnull.close()
+  return "/".join((dest_dir, hgfile))
+
 def createDiffTex(oldfile, newfile, diff_output = "diff.tex", swaplocal = False):
   ''' Produce diff.tex based on the two files in "oldfile" and "newfile" '''
   diff_tex = open(diff_output, "w")
