@@ -9,10 +9,10 @@ def showHelp(argv):
   if old_fileloc in ["-h","h","--help","help","--h"]:
     printHelp()    
 
-def runCommand(cmd, stdout = None):
+def runCommand(cmd, stdout = None, stderr = None, cwd = None):
     ''' Runs the command and returns an appropriate string '''
     try:
-      retcode = subprocess.call(cmd, stdout = stdout)
+      retcode = subprocess.call(cmd, stdout = stdout, stderr = stderr, cwd = cwd)
       if retcode == 0:
           message = "OK"
       else:
@@ -113,26 +113,35 @@ def dumpRepositoryVersion2tmp(old_fileloc, new_fileloc, git):
   old_texfile = cloneRepository(old_fileloc, old_dir, git)
   new_texfile = cloneRepository(new_fileloc, new_dir, git)
   return old_texfile, new_texfile
- 
+
+def parseFileloc(fileloc):
+  return(fileloc.split(":"))
+
 def cloneRepository(fileloc, dest_dir, git):
-  if git:
-    texfile = cloneGitRepository(fileloc, dest_dir)
+  if not "local" in fileloc:    
+    if git:
+      texfile = cloneGitRepository(fileloc, dest_dir)
+    else:
+      texfile = cloneHgRepository(fileloc, dest_dir)
   else:
-    texfile = cloneHgRepository(fileloc, dest_dir)
+    print "Using local revision of %s: OK" % fileloc
+    texfile = parseFileloc(fileloc)[1]
   return texfile
 
-def cloneGitRepository(fileloc, dest_dir):
-  pass
+def cloneGitRepository(git_fileloc, dest_dir):
+  rev, gitfile = parseFileloc(git_fileloc)
+  devnull = open(os.devnull, "w")
+  print "Cloning repository: %s" % (runCommand(("git","clone", ".", dest_dir), stdout = devnull))
+  print "Setting the repository to revision %s: %s" % (rev, runCommand(("git","checkout", rev), 
+              stdout = devnull, stderr = devnull, cwd = dest_dir))
+  devnull.close()
+  return "/".join((dest_dir, gitfile))
+
 
 def cloneHgRepository(hg_fileloc, dest_dir):
-  hgfile_split = hg_fileloc.split(":")
-  rev = hgfile_split[0]
-  hgfile = hgfile_split[1]
-  src_dir = os.path.dirname(hgfile)
-  if src_dir == "":
-    src_dir = "."
+  rev, hgfile = parseFileloc(hg_fileloc)
   devnull = open(os.devnull, "w")
-  print "Cloning revision %s: %s" % (rev, runCommand(("hg","clone", "-r%s" % rev, src_dir, dest_dir), stdout = devnull))
+  print "Cloning revision %s: %s" % (rev, runCommand(("hg","clone", "-r%s" % rev, ".", dest_dir), stdout = devnull))
   devnull.close()
   return "/".join((dest_dir, hgfile))
 
