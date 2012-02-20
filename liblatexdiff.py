@@ -76,30 +76,6 @@ def gitOrHg():
     exit()    
   return git
 
-def dumpLocalFile(f, output_fileobj = None):
-  ''' Do not dump from the repository, but dump a local file. '''
-  print "Dumping a local file %s: %s" % (f, runCommand(("cat", f), stdout = output_fileobj))
-
-def dumpGitFile(git_fileloc, output_fileobj = None):
-  ''' Dumping the file in 'git_fileloc' to a file open at 'output_fileobj' '''
-  gitfile_split = git_fileloc.split(":")
-  rev = gitfile_split[0]
-  gitfile = hgfile_split[1]
-  if rev == "local":
-    dumpLocalFile(gitfile, output_fileobj)
-  else:
-    print "Dumping %s: %s" % (git_fileloc, runCommand(("git","show", git_fileloc), stdout = output_fileobj))
-
-def dumpHgFile(hg_fileloc, output_fileobj = None):
-  ''' Dumping the file in 'git_fileloc' to a file open at 'output_fileobj' '''
-  hgfile_split = hg_fileloc.split(":")
-  rev = hgfile_split[0]
-  hgfile = hgfile_split[1]
-  if rev == "local":
-    dumpLocalFile(hgfile, output_fileobj)
-  else:
-    print "Dumping %s: %s" % (hg_fileloc, runCommand(("hg","cat", "-r %s" % rev, hgfile), stdout = output_fileobj))
-
 def bibtex(aux_file, log_file = None):
   ''' Run bibtex on the diff.aux file to get working citations '''
   print "Running bibtex: %s" % runCommand(("bibtex", aux_file), stdout = log_file)
@@ -127,21 +103,37 @@ def processCmdlineArgs(argv, git):
     else:
       new_fileloc = "tip:" + old_fileloc.split(":")[1]  
   return old_fileloc, new_fileloc
-
-def dumpFiles2tmp(old_fileloc, new_fileloc, git):
-  ''' Create the requested two files, and put them in a temp file. '''
-  old_fo = open(tempfile.mkstemp()[1], "w")
-  new_fo = open(tempfile.mkstemp()[1], "w")
-  if git:
-    dumpGitFile(old_fileloc, old_fo)
-    dumpGitFile(new_fileloc, new_fo)  
-  else:
-    dumpHgFile(old_fileloc, old_fo)
-    dumpHgFile(new_fileloc, new_fo)
-  old_fo.close()
-  new_fo.close()
-  return old_fo, new_fo
   
+def dumpRepositoryVersion2tmp(old_fileloc, new_fileloc, git):
+  old_dir = tempfile.mkdtemp()
+  new_dir = tempfile.mkdtemp()
+  old_texfile = cloneRepository(old_fileloc, old_dir, git)
+  new_texfile = cloneRepository(new_fileloc, new_dir, git)
+  return old_texfile, new_texfile
+ 
+
+def cloneRepository(fileloc, dest_dir, git):
+  if git:
+    texfile = cloneGitRepository(fileloc, dest_dir)
+  else:
+    texfile = cloneHgRepository(fileloc, dest_dir)
+  return texfile
+
+def cloneGitRepository(fileloc, dest_dir):
+  pass
+
+def cloneHgRepository(hg_fileloc, dest_dir):
+  hgfile_split = hg_fileloc.split(":")
+  rev = hgfile_split[0]
+  hgfile = hgfile_split[1]
+  src_dir = os.path.dirname(hgfile)
+  if src_dir == "":
+    src_dir = "."
+  devnull = open(os.devnull, "w")
+  print "Cloning revision %s: %s" % (rev, runCommand(("hg","clone", "-r%s" % rev, src_dir, dest_dir), stdout = devnull))
+  devnull.close()
+  return "/".join((dest_dir, hgfile))
+
 def createDiffTex(oldfile, newfile, diff_output = "diff.tex", swaplocal = False):
   ''' Produce diff.tex based on the two files in "oldfile" and "newfile" '''
   diff_tex = open(diff_output, "w")

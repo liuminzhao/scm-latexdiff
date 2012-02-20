@@ -8,8 +8,8 @@ def scm_latexdiff(argv):
   showHelp(argv)
   git = gitOrHg()
   old_fileloc, new_fileloc = processCmdlineArgs(argv, git)
-  old_fo, new_fo = dumpFiles2tmp(old_fileloc, new_fileloc, git)
-  createDiffTex(old_fo.name, new_fo.name, swaplocal = "local" in old_fileloc and not "local" in new_fileloc)
+  old_texfile, new_texfile = dumpRepositoryVersion2tmp(old_fileloc, new_fileloc, git)
+  createDiffTex(old_texfile, new_texfile, swaplocal = "local" in old_fileloc and not "local" in new_fileloc)
   compileDiffPdf("diff.log")
   cleanAllNonePDF()
   
