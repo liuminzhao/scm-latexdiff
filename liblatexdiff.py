@@ -1,5 +1,4 @@
 import os, os.path, subprocess, tempfile, glob, re, sys
-from numpy import shape
 
 def showHelp(argv):
   ''' Determine whether or not to shows the usage to the user '''
@@ -176,7 +175,7 @@ def extractMultiFile(mainfile):
   
 def checkMultiFiles(sub_files_input, sub_files_include):
   '''return True if LATEX document is spread over multiple files, False otherwise'''
-  if shape(sub_files_input)[0]>0 or shape(sub_files_include)[0]>0:
+  if len(sub_files_input)>0 or len(sub_files_include)>0:
 	return True
 	
 def returnMultiFiles(old_tex, new_tex):
@@ -194,7 +193,7 @@ def checkLatexdiff():
   proc = subprocess.Popen(('latexdiff','--flatten'),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
   output,errors = proc.communicate()
   noFlatten = re.findall("flatten", errors)
-  if shape(noFlatten)[0]>0:
+  if len(noFlatten)>0:
 	print "ABORTING... \n \n Your version of latexdiff does not support documents splitted over multiple files. \n Please update your version of latexdiff. \n"
 	sys.exit(0)
 
