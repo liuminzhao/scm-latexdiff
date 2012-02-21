@@ -1,4 +1,5 @@
-import os, os.path, subprocess, tempfile, glob
+import os, os.path, subprocess, tempfile, glob, re, sys
+from numpy import shape
 
 def showHelp(argv):
   ''' Determine whether or not to shows the usage to the user '''
@@ -23,7 +24,11 @@ def runCommand(cmd, stdout = None, stderr = None, cwd = None):
 
 def latexdiff(old_tex, new_tex, diff_tex = None):
   ''' Run latexdiff for the above input '''
-  print "Running latexdiff: %s" % runCommand(("latexdiff", old_tex, new_tex), stdout = diff_tex)
+  if returnMultiFiles(old_tex, new_tex)==True:
+	checkLatexdiff()
+	print "Running latexdiff: %s" % runCommand(("latexdiff","--flatten", old_tex, new_tex), stdout = diff_tex)
+  else:
+	print "Running latexdiff: %s" % runCommand(("latexdiff", old_tex, new_tex), stdout = diff_tex)
   print "diff stored in %s" % diff_tex.name
 
 def pdflatex(tex_file, log_file = None):
@@ -159,3 +164,37 @@ def cleanAllNonePDF():
   for filename in glob.glob('diff*') :
     if not "pdf" in filename:
       os.remove(filename)   
+
+def extractMultiFile(mainfile):
+  '''Search if the document is composed of multiple .tex files and extract names if needed'''
+  main_file = open(mainfile, 'r')
+  main_text = main_file.read()
+  main_file.close()
+  sub_files_input = re.findall("input\\{(.*)}", main_text)
+  sub_files_include = re.findall("include\\{(.*)}", main_text)
+  return sub_files_input, sub_files_include
+  
+def checkMultiFiles(sub_files_input, sub_files_include):
+  '''return True if LATEX document is spread over multiple files, False otherwise'''
+  if shape(sub_files_input)[0]>0 or shape(sub_files_include)[0]>0:
+	return True
+	
+def returnMultiFiles(old_tex, new_tex):
+  '''check if either old_tex or new_tex is composed from multiple files'''
+  sub_files_input, sub_files_include = extractMultiFile(old_tex)
+  if checkMultiFiles(sub_files_input, sub_files_include)==True:
+	return True
+  else:
+	sub_files_input, sub_files_include = extractMultiFile(new_tex)
+	if checkMultiFiles(sub_files_input, sub_files_include)==True:
+	  return True
+	
+def checkLatexdiff():
+  '''check if latexdiff supports the --flatten argument'''
+  proc = subprocess.Popen(('latexdiff','--flatten'),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+  output,errors = proc.communicate()
+  noFlatten = re.findall("flatten", errors)
+  if shape(noFlatten)[0]>0:
+	print "ABORTING... \n \n Your version of latexdiff does not support documents splitted over multiple files. \n Please update your version of latexdiff. \n"
+	sys.exit(0)
+
