@@ -1,4 +1,6 @@
-# Copyright © 2012, Paul Hiemstra <paul@numbertheory.nl>, 
+#!/usr/bin/env python2
+
+# Copyright (c) 2012, Paul Hiemstra <paul@numbertheory.nl>, 
 # Ronald van Haren <ronald@archlinux.org>.
 # This file is part of scm-latexdiff.
 
@@ -15,11 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-#!/usr/bin/env python2
-
 import sys
-from liblatexdiff import *
+from scm_latexdiff.liblatexdiff import *
 
 def scm_latexdiff(argv):
   ''' Calculate diff pdf between two latex files, either in hg, git, or a local file. '''
