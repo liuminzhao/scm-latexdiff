@@ -10,7 +10,7 @@ def main():
     author="Paul Hiemstra <paul@numbertheory.nl>, Ronald van Haren <ronald@archlinux.org>",
     url="https://bitbucket.org/paulhiemstra/scm-latexdiff",
     license="GPL v3",
-    packages=["scm-latexdiff"], 
+    packages=["python-scm-latexdiff"], 
     scripts=["bin/scm-latexdiff"],
     classifiers=["Development Status :: 5 - Production/Stable", "Intended Audience :: End Users/Desktop", "License :: OSI Approved :: GNU General Public License (GPL)", "Operating System :: POSIX :: Linux"],
         # a bunch of optional tags, a list of classifiers can be found at http://pypi.python.org/pypi?:action=list_classifiers
