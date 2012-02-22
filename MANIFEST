@@ -1,5 +1,5 @@
 README
 setup.py
 bin/scm-latexdiff
-python-scm-latexdiff/__init__.py
-python-scm-latexdiff/liblatexdiff.py
+scm_latexdiff/__init__.py
+scm_latexdiff/liblatexdiff.py
