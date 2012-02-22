@@ -54,7 +54,11 @@ def pdflatex(tex_file, log_file = None):
 
 def printHelp():
   ''' Print usage information and quit the program '''
-  print """A command line tool to create diff pdf's from git and mercurial repos.
+  print """===========
+scm-latexdiff
+===========
+
+A command line tool to create diff pdf's from git and mercurial repos.
 The script will automatically detect if the repo is git or hg. The 
 result is a pdf with the differences between the revisions, diff.pdf.
   
@@ -66,7 +70,10 @@ where:
   NEW:    new revision id, local for non-commited
   FILE:   filename of the file you want to diff
   
-examples:
+
+Examples
+========
+
  # for hg
  scm-latexdiff 4:spam.tex
  scm-latexdiff 4:spam.tex 6:spam.tex
@@ -77,12 +84,33 @@ examples:
  scm-latexdiff local:spam.tex
  scm-latexdiff 2:spam.tex local:spam.tex
 
-Notes:
+
+Notes
+=====
+
 The NEW:FILE argument is optional, default NEW is 'HEAD' when using git, 
 and 'tip' when using hg. When referring to a git revision, not the whole
 sha1 key is needed, you can just provide the first few numbers.
 
-Paul Hiemstra, paul AT numbertheory.nl"""
+
+License
+=======
+
+Copyright © 2012, Paul Hiemstra <paul@numbertheory.nl>, 
+Ronald van Haren <ronald@archlinux.org>.
+
+scm-latexdiff is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the Licence, or
+(at your option) any later version.
+
+scm-latexdiff is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
   exit()
   
 def gitOrHg():
