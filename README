@@ -37,6 +37,18 @@ The NEW:FILE argument is optional, default NEW is 'HEAD' when using git,
 and 'tip' when using hg. When referring to a git revision, not the whole
 sha1 key is needed, you can just provide the first few numbers.
 
+INSTALL
+=======
+
+This tool uses distutils for installation. The following command installs
+the tool on your machine:
+
+python setup.py install
+
+To install to a non-standard directory tree (e.g. in your home directory) use
+--prefix:
+
+python setup.py install --prefix=/home/spam/
 
 License
 =======
