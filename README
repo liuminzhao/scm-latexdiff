@@ -48,7 +48,9 @@ python setup.py install
 To install to a non-standard directory tree (e.g. in your home directory) use
 --prefix:
 
-python setup.py install --prefix=/home/spam/
+python setup.py install --prefix=/home/spam/. Do remember to add 
+/home/spam/lib/python2.x/site-packages/ to your PYTHONPATH environment 
+variable.
 
 License
 =======
