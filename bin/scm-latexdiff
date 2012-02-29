@@ -1,4 +1,5 @@
-#!/usr/bin/env python2
+#! /usr/bin/env python2
+# -*- coding: iso-8859-1 -*-
 
 # Copyright (c) 2012, Paul Hiemstra <paul@numbertheory.nl>, 
 # Ronald van Haren <ronald@archlinux.org>.
@@ -27,6 +28,7 @@ def scm_latexdiff(argv):
   old_fileloc, new_fileloc = processCmdlineArgs(argv, git)
   old_texfile, new_texfile = dumpRepositoryVersion2tmp(old_fileloc, new_fileloc, git)
   createDiffTex(old_texfile, new_texfile, swaplocal = "local" in old_fileloc and not "local" in new_fileloc)
+  removeTrailingNewlines('diff.tex')
   compileDiffPdf("diff.log")
   cleanAllNonePDF()
   

@@ -1,3 +1,6 @@
+#! /usr/bin/env python2
+# -*- coding: iso-8859-1 -*-
+
 # Copyright © 2012, Paul Hiemstra <paul@numbertheory.nl>, 
 # Ronald van Haren <ronald@archlinux.org>.
 # This file is part of scm-latexdiff.
@@ -15,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os, os.path, subprocess, tempfile, glob, re, sys
+from shutil import move
 
 def showHelp(argv):
   ''' Determine whether or not to shows the usage to the user '''
@@ -54,9 +57,9 @@ def pdflatex(tex_file, log_file = None):
 
 def printHelp():
   ''' Print usage information and quit the program '''
-  print """===========
+  print """=============
 scm-latexdiff
-===========
+=============
 
 A command line tool to create diff pdf's from git and mercurial repos.
 The script will automatically detect if the repo is git or hg. The 
@@ -187,7 +190,6 @@ def cloneGitRepository(git_fileloc, dest_dir):
   devnull.close()
   return "/".join((dest_dir, gitfile))
 
-
 def cloneHgRepository(hg_fileloc, dest_dir):
   rev, hgfile = parseFileloc(hg_fileloc)
   devnull = open(os.devnull, "w")
@@ -243,3 +245,20 @@ def checkLatexdiff():
 	print "ABORTING... \n \n Your version of latexdiff does not support documents splitted over multiple files. \n Please update your version of latexdiff. \n"
 	sys.exit(0)
 
+def replacePattern(file, pattern, subst):
+  '''Replace (in-place) a pattern in a file'''
+  fh, abs_path = tempfile.mkstemp()
+  new_file = open(abs_path,'w')
+  old_file = open(file, 'r')
+  old_text = old_file.read()
+  old_file.close()
+  new_file.write( re.sub(pattern,subst,old_text) )
+  new_file.close()
+  os.remove(file)
+  move(abs_path, file)
+  
+def removeTrailingNewlines(texfile):
+  '''Remove newlines (\n) that are between \DIFadd{ some text } <-- and this final }'''
+  regexp = "\r\n\r}"
+  sub_text = "\n}\n"
+  replacePattern(texfile, regexp, sub_text)
