@@ -252,7 +252,7 @@ def replacePattern(file, pattern, subst):
   old_file = open(file, 'r')
   old_text = old_file.read()
   old_file.close()
-  new_file.write( re.sub(pattern,subst,old_text) )
+  new_file.write( re.sub(pattern,subst,re.sub(r'(?<!\\)%.*?\n', "", old_text)) )
   new_file.close()
   os.remove(file)
   move(abs_path, file)
@@ -262,3 +262,6 @@ def removeTrailingNewlines(texfile):
   regexp = "\r\n\r}"
   sub_text = "\n}\n"
   replacePattern(texfile, regexp, sub_text)
+  regexp = "\r\n\r\r}"
+  replacePattern(texfile, regexp, sub_text)
+
