@@ -30,11 +30,12 @@ def showHelp(argv):
   if old_fileloc in ["-h","h","--help","help","--h"]:
     printHelp()    
 
-def runCommand(cmd, stdout = None, stderr = None, cwd = None):
+def runCommand(cmd, stdout = None, stderr = None, cwd = None, ignoredRetCodes = []):
     ''' Runs the command and returns an appropriate string '''
+    assert isinstance(ignoredRetCodes, list), "ignoredRetCodes should be a list"
     try:
       retcode = subprocess.call(cmd, stdout = stdout, stderr = stderr, cwd = cwd)
-      if retcode == 0:
+      if retcode == 0 or retcode in ignoredRetCodes:
           message = "OK"
       else:
           message = "failed (retcode: %s)" % retcode
@@ -53,7 +54,7 @@ def latexdiff(old_tex, new_tex, diff_tex = None):
 
 def pdflatex(tex_file, log_file = None):
   ''' Run pdflatex on the resulting tex file '''
-  print "Running pdflatex: %s" % runCommand(("pdflatex", "-interaction=nonstopmode", tex_file), stdout = log_file)
+  print "Running pdflatex: %s" % runCommand(("pdflatex", "-interaction=nonstopmode", tex_file), stdout = log_file, ignoredRetCodes = [1])
 
 def printHelp():
   ''' Print usage information and quit the program '''
