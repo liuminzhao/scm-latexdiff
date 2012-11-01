@@ -53,7 +53,7 @@ def latexdiff(old_tex, new_tex, diff_tex = None):
 
 def pdflatex(tex_file, log_file = None):
   ''' Run pdflatex on the resulting tex file '''
-  print "Running pdflatex: %s" % runCommand(("pdflatex -interaction=nonstopmode", tex_file), stdout = log_file)
+  print "Running pdflatex: %s" % runCommand(("pdflatex", "-interaction=nonstopmode", tex_file), stdout = log_file)
 
 def printHelp():
   ''' Print usage information and quit the program '''
