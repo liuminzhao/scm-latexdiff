@@ -1,7 +1,7 @@
 #! /usr/bin/env python2
 # -*- coding: iso-8859-1 -*-
 
-# Copyright © 2012, Paul Hiemstra <paul@numbertheory.nl>, 
+# Copyright © 2012, Paul Hiemstra <paul@numbertheory.nl>,
 # Ronald van Haren <ronald@archlinux.org>.
 # This file is part of scm-latexdiff.
 
@@ -26,9 +26,9 @@ def showHelp(argv):
   try:
     old_fileloc = argv[1]
   except IndexError:
-    printHelp()    
+    printHelp()
   if old_fileloc in ["-h","h","--help","help","--h"]:
-    printHelp()    
+    printHelp()
   if old_fileloc in ["-v","v","--version","-version","version","--v"]:
     import pkg_resources
     print pkg_resources.require("scm-latexdiff")[0].version
@@ -67,17 +67,17 @@ scm-latexdiff
 =============
 
 A command line tool to create diff pdf's from git and mercurial repos.
-The script will automatically detect if the repo is git or hg. The 
+The script will automatically detect if the repo is git or hg. The
 result is a pdf with the differences between the revisions, diff.pdf.
-  
+
 Usage:
   scm-latexdiff OLD:FILE [NEW:FILE]
-  
+
 where:
   OLD:    old revision id, local for non-commited
   NEW:    new revision id, local for non-commited
   FILE:   filename of the file you want to diff
-  
+
 
 Examples
 ========
@@ -96,7 +96,7 @@ Examples
 Notes
 =====
 
-The NEW:FILE argument is optional, default NEW is 'HEAD' when using git, 
+The NEW:FILE argument is optional, default NEW is 'HEAD' when using git,
 and 'tip' when using hg. When referring to a git revision, not the whole
 sha1 key is needed, you can just provide the first few numbers.
 
@@ -104,7 +104,7 @@ sha1 key is needed, you can just provide the first few numbers.
 License
 =======
 
-Copyright © 2012, Paul Hiemstra <paul@numbertheory.nl>, 
+Copyright © 2012, Paul Hiemstra <paul@numbertheory.nl>,
 Ronald van Haren <ronald@archlinux.org>.
 
 scm-latexdiff is free software: you can redistribute it and/or modify
@@ -120,7 +120,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
   exit()
-  
+
 def gitOrHg():
   ''' Determine whether we are in a git or mercurial repository'''
   if os.path.exists(".hg"):
@@ -131,7 +131,7 @@ def gitOrHg():
     git = True
   else:
     print "Error, no Git or Mercurial repository present."
-    exit()    
+    exit()
   return git
 
 def dumpLocalFile(f, output_fileobj = None):
@@ -160,11 +160,11 @@ def processCmdlineArgs(argv, git):
     new_fileloc = argv[2]
   except IndexError:
     if git:
-      new_fileloc = "HEAD:" + old_fileloc.split(":")[1]  
+      new_fileloc = "HEAD:" + old_fileloc.split(":")[1]
     else:
-      new_fileloc = "tip:" + old_fileloc.split(":")[1]  
+      new_fileloc = "tip:" + old_fileloc.split(":")[1]
   return old_fileloc, new_fileloc
-  
+
 def dumpRepositoryVersion2tmp(old_fileloc, new_fileloc, git):
   old_dir = tempfile.mkdtemp()
   new_dir = tempfile.mkdtemp()
@@ -176,7 +176,7 @@ def parseFileloc(fileloc):
   return(fileloc.split(":"))
 
 def cloneRepository(fileloc, dest_dir, git):
-  if not "local" in fileloc:    
+  if not "local" in fileloc:
     if git:
       texfile = cloneGitRepository(fileloc, dest_dir)
     else:
@@ -190,7 +190,7 @@ def cloneGitRepository(git_fileloc, dest_dir):
   rev, gitfile = parseFileloc(git_fileloc)
   devnull = open(os.devnull, "w")
   print "Cloning repository: %s" % (runCommand(("git","clone", ".", dest_dir), stdout = devnull))
-  print "Setting the repository to revision %s: %s" % (rev, runCommand(("git","checkout", rev), 
+  print "Setting the repository to revision %s: %s" % (rev, runCommand(("git","checkout", rev),
               stdout = devnull, stderr = devnull, cwd = dest_dir))
   devnull.close()
   return "/".join((dest_dir, gitfile))
@@ -210,12 +210,12 @@ def createDiffTex(oldfile, newfile, diff_output = "diff.tex", swaplocal = False)
   else:
     latexdiff(oldfile, newfile, diff_tex)
   diff_tex.close()
-  
+
 def cleanAllNonePDF():
   ''' Delete all diff files that are not a .pdf file '''
   for filename in glob.glob('diff*') :
-    if not "pdf" in filename:
-      os.remove(filename)   
+    if not "pdf" in filename and not "tex" in filename and not "aux" in filename:
+      os.remove(filename)
 
 def extractMultiFile(mainfile):
   '''Search if the document is composed of multiple .tex files and extract names if needed'''
@@ -225,12 +225,12 @@ def extractMultiFile(mainfile):
   sub_files_input = re.findall("input\\{(.*)}", main_text)
   sub_files_include = re.findall("include\\{(.*)}", main_text)
   return sub_files_input, sub_files_include
-  
+
 def checkMultiFiles(sub_files_input, sub_files_include):
   '''return True if LATEX document is spread over multiple files, False otherwise'''
   if len(sub_files_input)>0 or len(sub_files_include)>0:
 	return True
-	
+
 def returnMultiFiles(old_tex, new_tex):
   '''check if either old_tex or new_tex is composed from multiple files'''
   sub_files_input, sub_files_include = extractMultiFile(old_tex)
@@ -240,7 +240,7 @@ def returnMultiFiles(old_tex, new_tex):
 	sub_files_input, sub_files_include = extractMultiFile(new_tex)
 	if checkMultiFiles(sub_files_input, sub_files_include)==True:
 	  return True
-	
+
 def checkLatexdiff():
   '''check if latexdiff supports the --flatten argument'''
   proc = subprocess.Popen(('latexdiff','--flatten'),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -261,7 +261,7 @@ def replacePattern(file, pattern, subst):
   new_file.close()
   os.remove(file)
   move(abs_path, file)
-  
+
 def removeTrailingNewlines(texfile):
   '''Remove newlines (\n) that are between \DIFadd{ some text } <-- and this final }'''
   regexp = "\r\n\r}"
@@ -269,4 +269,3 @@ def removeTrailingNewlines(texfile):
   replacePattern(texfile, regexp, sub_text)
   regexp = "\r\n\r\r}"
   replacePattern(texfile, regexp, sub_text)
-
