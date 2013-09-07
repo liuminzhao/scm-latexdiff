@@ -142,8 +142,10 @@ def bibtex(aux_file, log_file = None):
   ''' Run bibtex on the diff.aux file to get working citations '''
   print "Running bibtex: %s" % runCommand(("bibtex", aux_file), stdout = log_file)
 
-def compileDiffPdf(log_file = None):
+def compileDiffPdf(log_file = None, diff_fileloc = None):
   ''' Compile diff.pdf based on diff.tex '''
+  owd = os.getcwd()
+  os.chdir(diff_fileloc)
   if not log_file is None:
     log_file = open(log_file, "w")
   pdflatex("diff.tex", log_file)
@@ -152,18 +154,20 @@ def compileDiffPdf(log_file = None):
   pdflatex("diff.tex", log_file)
   if not log_file is None:
     log_file.close()
+  os.chdir(owd)
 
 def processCmdlineArgs(argv, git):
   ''' Process the command line arguments given by the user '''
   old_fileloc = argv[1]
   try:
     new_fileloc = argv[2]
+    diff_fileloc = argv[3]
   except IndexError:
     if git:
       new_fileloc = "HEAD:" + old_fileloc.split(":")[1]
     else:
       new_fileloc = "tip:" + old_fileloc.split(":")[1]
-  return old_fileloc, new_fileloc
+  return old_fileloc, new_fileloc, diff_fileloc
 
 def dumpRepositoryVersion2tmp(old_fileloc, new_fileloc, git):
   old_dir = tempfile.mkdtemp()

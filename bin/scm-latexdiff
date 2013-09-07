@@ -1,7 +1,7 @@
 #! /usr/bin/env python2
 # -*- coding: iso-8859-1 -*-
 
-# Copyright (c) 2012, Paul Hiemstra <paul@numbertheory.nl>, 
+# Copyright (c) 2012, Paul Hiemstra <paul@numbertheory.nl>,
 # Ronald van Haren <ronald@archlinux.org>.
 # This file is part of scm-latexdiff.
 
@@ -19,19 +19,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import os
 from scm_latexdiff.liblatexdiff import *
 
 def scm_latexdiff(argv):
   ''' Calculate diff pdf between two latex files, either in hg, git, or a local file. '''
   showHelp(argv)
   git = gitOrHg()
-  old_fileloc, new_fileloc = processCmdlineArgs(argv, git)
+  old_fileloc, new_fileloc, diff_fileloc = processCmdlineArgs(argv, git)
   old_texfile, new_texfile = dumpRepositoryVersion2tmp(old_fileloc, new_fileloc, git)
-  createDiffTex(old_texfile, new_texfile, swaplocal = "local" in old_fileloc and not "local" in new_fileloc)
-  removeTrailingNewlines('diff.tex')
-  compileDiffPdf("diff.log")
+  diff_output = "/".join((diff_fileloc, "diff.tex"))
+  createDiffTex(old_texfile, new_texfile, diff_output, swaplocal = "local" in old_fileloc and not "local" in new_fileloc)
+  removeTrailingNewlines(diff_output)
+  compileDiffPdf("diff.log", diff_fileloc)
   cleanAllNonePDF()
-  
+
 if __name__ == "__main__":
   scm_latexdiff(sys.argv)
-
