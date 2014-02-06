@@ -8,6 +8,7 @@ The script will automatically detect if the repo is git or hg. The
 result is a pdf with the differences between the revisions, diff.pdf.
 
 Usage:
+
   scm-latexdiff OLD:FILE NEW:FILE DIFF_DIR
 
 where:
