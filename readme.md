@@ -9,19 +9,21 @@ result is a pdf with the differences between the revisions, diff.pdf.
 
 Usage:
 
-  scm-latexdiff OLD:FILE NEW:FILE DIFF_DIR
+	scm-latexdiff OLD:FILE NEW:FILE DIFF_DIR
 
 where:
-  OLD:    old revision id, local for non-commited
-  NEW:    new revision id, local for non-commited
-  FILE:   filename of the file you want to diff
-  DIFF_DIR: diff file directory
+
+	OLD:    old revision id, local for non-commited
+	NEW:    new revision id, local for non-commited
+	FILE:   filename of the file you want to diff
+	DIFF_DIR: diff file directory
 
 Examples
 ========
 
- # for git
- scm-latexdiff 87213:draft/spam.tex 97123:draft/spam.tex draft
+for git
+
+	scm-latexdiff 87213:draft/spam.tex 97123:draft/spam.tex draft
 
 Notes
 =====
@@ -34,14 +36,14 @@ INSTALL
 This tool uses distutils for installation. The following command installs
 the tool on your machine:
 
-python setup.py install
+	python setup.py install
 
 To install to a non-standard directory tree (e.g. in your home directory) use
---prefix:
+`--prefix`:
 
-python setup.py install --prefix=/home/spam/. Do remember to add
-/home/spam/lib/python2.x/site-packages/ to your PYTHONPATH environment
-variable.
+	python setup.py install --prefix=/home/spam/
+
+Do remember to add `/home/spam/lib/python2.x/site-packages/` to your `PYTHONPATH` environment variable.
 
 License
 =======
@@ -66,5 +68,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Contributors
 ============
-Paul Hiemstra <paul@numbertheory.nl>
-Ronald van Haren <ronald@archlinux.org>
+
+- Paul Hiemstra <paul@numbertheory.nl>
+- Ronald van Haren <ronald@archlinux.org>
