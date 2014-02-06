@@ -4,38 +4,28 @@ scm-latexdiff
 ===========
 
 A command line tool to create diff pdf's from git and mercurial repos.
-The script will automatically detect if the repo is git or hg. The 
+The script will automatically detect if the repo is git or hg. The
 result is a pdf with the differences between the revisions, diff.pdf.
-  
+
 Usage:
-  scm-latexdiff OLD:FILE [NEW:FILE]
-  
+  scm-latexdiff OLD:FILE NEW:FILE DIFF_DIR
+
 where:
   OLD:    old revision id, local for non-commited
   NEW:    new revision id, local for non-commited
   FILE:   filename of the file you want to diff
-  
+  DIFF_DIR: diff file directory
 
 Examples
 ========
 
- # for hg
- scm-latexdiff 4:spam.tex
- scm-latexdiff 4:spam.tex 6:spam.tex
  # for git
- scm-latexdiff 87213:spam.tex
- scm-latexdiff 87213:spam.tex 97123:spam.tex
- # You can also diff against non-commited (local) files
- scm-latexdiff local:spam.tex
- scm-latexdiff 2:spam.tex local:spam.tex
-
+ scm-latexdiff 87213:draft/spam.tex 97123:draft/spam.tex draft
 
 Notes
 =====
 
-The NEW:FILE argument is optional, default NEW is 'HEAD' when using git, 
-and 'tip' when using hg. When referring to a git revision, not the whole
-sha1 key is needed, you can just provide the first few numbers.
+I kept `diff.aux`, `diff.tex` files and added `DIFF_DIR` to allow troublesome when sometimes `Bibtex` does not work. Please run this script under root directory for the repo.
 
 INSTALL
 =======
@@ -48,14 +38,14 @@ python setup.py install
 To install to a non-standard directory tree (e.g. in your home directory) use
 --prefix:
 
-python setup.py install --prefix=/home/spam/. Do remember to add 
-/home/spam/lib/python2.x/site-packages/ to your PYTHONPATH environment 
+python setup.py install --prefix=/home/spam/. Do remember to add
+/home/spam/lib/python2.x/site-packages/ to your PYTHONPATH environment
 variable.
 
 License
 =======
 
-Copyright © 2012, Paul Hiemstra <paul@numbertheory.nl>, 
+Copyright © 2012, Paul Hiemstra <paul@numbertheory.nl>,
 Ronald van Haren <ronald@archlinux.org>.
 This file is part of scm-latexdiff.
 
@@ -77,4 +67,3 @@ Contributors
 ============
 Paul Hiemstra <paul@numbertheory.nl>
 Ronald van Haren <ronald@archlinux.org>
-
