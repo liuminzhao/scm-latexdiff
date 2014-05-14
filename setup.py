@@ -8,7 +8,7 @@ setup(
 	author_email="Paul Hiemstra <paul@numbertheory.nl>, Ronald van Haren <ronald@archlinux.org>",
 	url="https://bitbucket.org/paulhiemstra/scm-latexdiff",
     license="GPL v3",
-    packages=["scm_latexdiff"], 
+    packages=["scm_latexdiff"],
     scripts=["bin/scm-latexdiff"],
-    long_description=open('README').read(),
+    long_description=open('readme.md').read(),
 )

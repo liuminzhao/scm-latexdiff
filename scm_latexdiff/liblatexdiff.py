@@ -53,7 +53,7 @@ def latexdiff(old_tex, new_tex, diff_tex = None):
 	checkLatexdiff()
 	print "Running latexdiff: %s" % runCommand(("latexdiff","--flatten", old_tex, new_tex), stdout = diff_tex)
   else:
-	print "Running latexdiff: %s" % runCommand(("latexdiff", old_tex, new_tex), stdout = diff_tex)
+	print "Running latexdiff: %s" % runCommand(("latexdiff", "-t", "CTRADITIONAL", old_tex, new_tex), stdout = diff_tex)
   print "diff stored in %s" % diff_tex.name
 
 def pdflatex(tex_file, log_file = None):
